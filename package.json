@@ -1,0 +1,27 @@
+{
+  "name": "candle-chart-worker",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node app.js",
+    "start-dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "chalk": "^3.0.0",
+    "compression": "^1.7.4",
+    "dotenv": "^8.2.0",
+    "errorhandler": "^1.5.1",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "lodash": "^4.17.15",
+    "lusca": "^1.6.1",
+    "moment": "^2.24.0",
+    "mongodb": "^3.5.5",
+    "morgan": "^1.9.1",
+    "socket.io": "~2.1.1",
+    "ws": "^7.2.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sample page</title>
+</head>
+<body>
+
+<p>This is a sample page demonstrating how Express and socket.io work.</p>
+
+<p>Clients online: <span id="online"></span></p>
+
+<!-- this link is magically provided by socket.io -->
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+    /** @returns {void} */
+    async function main() {
+        const socket = io();
+        socket.on("connect", () => {
+            socket.emit("hello", `Hi there! I am ${window.navigator.userAgent}`);
+            socket.emit('subscribe', {symbol: 'USDJPY', frameType: '1m'});
+        });
+
+        const secondsElement = document.getElementById("seconds");
+        socket.on("seconds", seconds => secondsElement.innerText = seconds.toString());
+
+        const onlineElement = document.getElementById("online");
+        socket.on("online", online => onlineElement.innerText = online.toString());
+
+        socket.on('initial', (initialData) => {
+            console.log('initialData', initialData);
+        });
+    }
+
+    main();
+
+</script>
+
+</body>
+</html>
