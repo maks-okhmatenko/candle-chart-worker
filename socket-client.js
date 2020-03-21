@@ -20,7 +20,6 @@ module.exports = () => {
             return;
         }
         if (frame !== newFrame) {
-            // todo: save here
             timeframeEventEmitter.saveTimeframes(_.extend({}, timeframes), frame);
             timeframeEventEmitter.notifyTimeframes(_.extend({}, timeframes), frame);
             frame = newFrame;
@@ -30,12 +29,7 @@ module.exports = () => {
             const timeframeItem = _.get(timeframes, [messageItem.Symbol]);
             if (!timeframeItem) {
                 const bid = _.replace(messageItem.Bid, ',', '.');
-                _.set(timeframes, [messageItem.Symbol], {
-                    open: bid,
-                    high: bid,
-                    low: bid,
-                    close: bid
-                });
+                _.set(timeframes, [messageItem.Symbol], {open: bid, high: bid, low: bid, close: bid});
                 return;
             }
             const prevHigh = _.toNumber(timeframeItem.high);

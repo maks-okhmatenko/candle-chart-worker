@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>Sample page</title>
+    <link href="/styles.css" rel="stylesheet"/>
+    <style>
+        #chart {
+            max-width: 650px;
+            margin: 35px auto;
+        }
+    </style>
+    <script>
+        window.Promise || document.write('<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"><\/script>');
+        window.Promise || document.write('<script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20171210/classList.min.js"><\/script>');
+        window.Promise || document.write('<script src="https://cdn.jsdelivr.net/npm/findindex_polyfill_mdn"><\/script>');
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+</head>
+<body>
+<p>Clients online: <span id="online"></span></p>
+<div id="chart"></div>
+
+<!-- this link is magically provided by socket.io -->
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+    /** @returns {void} */
+    async function main() {
+        const socket = io();
+        socket.on("connect", () => {
+            socket.once('initial', (initialData) => {
+                console.log('initialData', initialData);
+                render(initialData);
+            });
+
+            socket.on('append', (dataItem) => {
+                console.log('append', dataItem);
+            });
+            socket.emit('subscribe', {symbol: 'USDJPY', frameType: '1m', from: 1584725400, to: 1584728400});
+        });
+
+        const onlineElement = document.getElementById("online");
+        socket.on("online", online => onlineElement.innerText = online.toString());
+    }
+
+    main();
+    var chart;
+
+    function prepareData(data) {
+        return data.map((dataItem) => {
+            return {
+                x: new Date(parseInt(dataItem.x) * 1000),
+                y: dataItem.y.map(x => parseFloat(x))
+            }
+        });
+    }
+
+    function render(data) {
+        if (!chart) {
+            const options = {
+                series: [{data: prepareData(data)}],
+                chart: {
+                    type: 'candlestick',
+                    height: 350
+                },
+                title: {
+                    text: 'CandleStick Chart',
+                    align: 'left'
+                },
+                xaxis: {
+                    type: 'datetime'
+                },
+                yaxis: {
+                    tooltip: {
+                        enabled: true
+                    }
+                }
+            };
+            chart = new ApexCharts(document.querySelector("#chart"), options);
+            chart.render();
+        }
+    }
+</script>
+
+</body>
+</html>

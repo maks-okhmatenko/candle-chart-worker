@@ -10,7 +10,6 @@ const dotenv = require('dotenv');
 
 dotenv.config({path: '.env'});
 
-
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
@@ -32,10 +31,8 @@ app.use(session({
 app.use(lusca.csrf());
 app.use(lusca.xframe('SAMEORIGIN'));
 app.use(lusca.xssProtection(true));
+app.use(express.static('public'));
 
-app.get('/', function(req, res){
-    res.sendFile(__dirname + '/index.html');
-});
 if (process.env.NODE_ENV === 'development') {
     // only use in development
     app.use(errorHandler());
