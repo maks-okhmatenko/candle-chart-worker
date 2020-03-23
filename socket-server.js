@@ -15,25 +15,14 @@ module.exports = (io) => {
         io.emit("online", subscribers.size);
     }, 1000);
 
-    timeframeEventEmitter.subscribeOnUpdate(() => {
-        const data = [{
-            symbol: "USDJPY",
-            x: 1584728460,
-            y: ["111.263", "111.265", "111.26", "111.264"]
-        }, {
-            symbol: "test",
-            x: 1584728460,
-            y: ["111.263", "111.265", "111.26", "111.264"]
-        }];
-
-        setInterval(() => {
-            for (let [key, value] of subscribers) {
-                const updateItem = _.find(data, {symbol: value.symbol});
-                if (updateItem) {
-                    io.to(`${key}`).emit('append', updateItem);
-                }
+    timeframeEventEmitter.subscribeOnUpdate((data) => {
+        for (let [key, value] of subscribers) {
+            const updateItem = _.find(data, {symbol: value.symbol, frameType: value.frameType});
+            if (updateItem) {
+                console.log('io.to', key, JSON.stringify(updateItem));
+                io.to(`${key}`).emit('append', updateItem);
             }
-        }, 1000)
+        }
     });
 };
 
@@ -46,6 +35,9 @@ function onNewWebsocketConnection(socket) {
     });
 
     socket.on('subscribe', (data) => {
+        if (!CONSTANTS.FRAME_TYPES[data.frameType]) {
+            return;
+        }
         const subscriber = {
             symbol: data.symbol,
             frameType: data.frameType,
@@ -54,7 +46,7 @@ function onNewWebsocketConnection(socket) {
         };
         subscribers.set(socket.id, subscriber);
         setImmediate(async () => {
-            console.log(subscriber);
+            console.log('subscriber', socket.id, JSON.stringify(subscriber));
             const collection = await repository.getCollection(subscriber.symbol, subscriber.frameType);
             const symbolList = await repository.getAll(collection, {
                 query: {
@@ -69,7 +61,7 @@ function onNewWebsocketConnection(socket) {
                 }
             });
             socket.emit('initial', symbolList.results.map((model) => {
-                return Utils.convertModel(model, subscriber.symbol);
+                return Utils.convertModel(model, subscriber.symbol, subscriber.frameType);
             }));
         });
     });

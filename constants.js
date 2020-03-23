@@ -1,11 +1,11 @@
 const FRAME_TYPES = {
-    M1: '1m',
-    M5: '5m',
-    M15: '15m',
-    M30: '30m',
-    H1: '1h',
-    H4: '4h',
-    D1: '1d'
+    M1: 'M1',
+    M5: 'M5',
+    M15: 'M15',
+    M30: 'M30',
+    H1: 'H1',
+    H4: 'H4',
+    D1: 'D1'
 };
 
 module.exports = {FRAME_TYPES};

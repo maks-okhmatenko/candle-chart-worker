@@ -7,11 +7,16 @@ class BaseRepository {
 
     async getCollection(symbol, frameType) {
         const db = await this.resolver.getConnection();
-        return db.collection(`${symbol}${frameType}`);
+        return db.collection(`${symbol}_${frameType}`);
     }
 
     async insert(collection, record) {
         const result = await collection.insertOne(record);
+        return _.first(result.ops);
+    }
+
+    async upsert(collection, record) {
+        const result = await collection.updateOne({frame: record.frame}, {$set: record}, {upsert: true});
         return _.first(result.ops);
     }
 

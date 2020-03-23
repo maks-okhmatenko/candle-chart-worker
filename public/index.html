@@ -29,6 +29,15 @@
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
+    const FRAME_TYPES = {
+        M1: 'M1',
+        M5: 'M5',
+        M15: 'M15',
+        M30: 'M30',
+        H1: 'H1',
+        H4: 'H4',
+        D1: 'D1'
+    };
     /** @returns {void} */
     async function main() {
         const socket = io();
@@ -41,7 +50,10 @@
             socket.on('append', (dataItem) => {
                 console.log('append', dataItem);
             });
-            socket.emit('subscribe', {symbol: 'USDJPY', frameType: '1m', from: 1584725400, to: 1584728400});
+            socket.emit('subscribe', {symbol: 'USDJPY', frameType: FRAME_TYPES.M15, from: 1584725400, to: 1584728400});
+        });
+        socket.on('disconnect', () => {
+            socket.off('append');
         });
 
         const onlineElement = document.getElementById("online");
