@@ -5,6 +5,15 @@ class ConnectionResolver {
     constructor() {
         this.uri = _.toString(process.env.MONGO_DB_URI);
         this.dbName = _.toString(process.env.MONGO_DB_NAME);
+        process.on('SIGINT', cleanup);
+        process.on('SIGTERM', cleanup);
+        function cleanup() {
+            console.log('cleanup');
+            if(this.client){
+                this.client.close();
+            }
+            process.exit();
+        }
     }
 
     async getConnection() {
