@@ -22,7 +22,9 @@ class ConnectionResolver {
                 throw Error('No valid DB server URI was provided');
             }
             try {
+                console.time('mongodb connect');
                 this.client = await MongoClient.connect(this.uri, {useNewUrlParser: true, useUnifiedTopology: true});
+                console.timeEnd('mongodb connect');
                 this.db = this.client.db(this.dbName);
             } catch (e) {
                 console.error(e);

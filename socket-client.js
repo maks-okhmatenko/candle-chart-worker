@@ -2,7 +2,6 @@ const WebSocket = require('ws');
 const _ = require('lodash');
 const moment = require('moment');
 const timeframeEventEmitter = require('./timeframe.event-emitter');
-const CONSTANTS = require('./constants');
 
 module.exports = () => {
     const ws = new WebSocket(_.toString(process.env.WS_STREAM_URI));
@@ -25,9 +24,6 @@ module.exports = () => {
             timeframes = {};
         }
         _.each(messageList, (messageItem) => {
-            // if (messageItem.Symbol !== 'USDJPY') {
-            //     return;
-            // }
             const timeframeItem = _.get(timeframes, [messageItem.Symbol]);
             if (!timeframeItem) {
                 const bid = _.replace(messageItem.Bid, ',', '.');

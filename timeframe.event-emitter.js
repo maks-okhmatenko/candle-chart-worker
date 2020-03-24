@@ -33,7 +33,7 @@ class TimeframeEventEmitter {
                     for (let i = 0; i < symbols.length; i += 1) {
                         const symbol = symbols[i];
                         const collection = await this.repository.getCollection(symbol, CONSTANTS.FRAME_TYPES.M1);
-                        await this.repository.insert(collection, _.extend({}, timeframes[symbol], {frame}));
+                        await this.repository.upsert(collection, _.extend({}, timeframes[symbol], {frame}));
                     }
                     console.timeEnd(timer);
                     this.notifyTimeframes(timeframes, frame, CONSTANTS.FRAME_TYPES.M1);
