@@ -1,7 +1,7 @@
 const Utils = require('./utils');
 const EventEmitter = require('events');
 const connectionResolver = require('./connection');
-const BaseRepository = require('./repositories/base.repository');
+const BaseRepository = require('./repository');
 const _ = require('lodash');
 const CONSTANTS = require('./constants');
 const moment = require('moment');
@@ -36,7 +36,6 @@ class TimeframeEventEmitter {
                         await this.repository.upsert(collection, _.extend({}, timeframes[symbol], {frame}));
                     }
                     console.timeEnd(timer);
-                    this.notifyTimeframes(timeframes, frame, CONSTANTS.FRAME_TYPES.M1);
                     this.emitter.emit(this.events.saveTimeframeM5, symbols, frame);
                 } catch (e) {
                     console.log(e);

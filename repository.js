@@ -1,6 +1,6 @@
 const _ = require('lodash');
 
-class BaseRepository {
+class Repository {
     constructor(resolver) {
         this.resolver = resolver;
     }
@@ -33,4 +33,4 @@ class BaseRepository {
 
 }
 
-module.exports = BaseRepository;
+module.exports = Repository;

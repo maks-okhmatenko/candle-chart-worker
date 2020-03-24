@@ -25,6 +25,10 @@ class Utils {
             y: [model.open, model.high, model.low, model.close]
         }
     }
+
+    static convertTickers(tickers){
+        return _.map(_.keys(tickers), (symbol) => tickers[symbol]);
+    }
 }
 
 module.exports = Utils;

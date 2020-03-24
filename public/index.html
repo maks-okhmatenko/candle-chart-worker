@@ -42,18 +42,23 @@
     async function main() {
         const socket = io();
         socket.on("connect", () => {
-            socket.once('initial', (initialData) => {
-                console.log('initialData', initialData);
+            socket.once('initialTimeframes', (initialData) => {
+                console.log('initialTimeframes', initialData);
                 render(initialData);
             });
 
-            socket.on('append', (dataItem) => {
-                console.log('append', dataItem);
+            socket.on('appendTimeframe', (dataItem) => {
+                console.log('appendTimeframe', dataItem);
             });
-            socket.emit('subscribe', {symbol: 'USDJPY', frameType: FRAME_TYPES.M15, from: 1584725400, to: 1584728400});
+            socket.emit('subscribeTimeframe', {symbol: 'EURAUD', frameType: FRAME_TYPES.M1, from: 1585012180, to: 1585098580});
+
+            socket.on('tickers', (tickers) => {
+                console.log('tickers', tickers);
+            })
         });
         socket.on('disconnect', () => {
-            socket.off('append');
+            socket.off('appendTimeframe');
+            socket.off('tickers');
         });
 
         const onlineElement = document.getElementById("online");
