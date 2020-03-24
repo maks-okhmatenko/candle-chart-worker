@@ -5,6 +5,7 @@ const timeframeEventEmitter = require('./timeframe.event-emitter');
 
 module.exports = () => {
     const ws = new WebSocket(_.toString(process.env.WS_STREAM_URI));
+    const ticketList = _.map(_.split(_.toString(process.env.TICKER_LIST), ','), (ticket) => _.trim(ticket));
     let timeframes = {};
     let frame;
 
@@ -24,6 +25,9 @@ module.exports = () => {
             timeframes = {};
         }
         _.each(messageList, (messageItem) => {
+            if (!_.includes(ticketList, messageItem.Symbol)) {
+                return;
+            }
             const timeframeItem = _.get(timeframes, [messageItem.Symbol]);
             if (!timeframeItem) {
                 const bid = _.replace(messageItem.Bid, ',', '.');
