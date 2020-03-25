@@ -22,9 +22,7 @@ class TimeframeEventEmitter {
 
         this.emitter = new EventEmitter();
         this.emitter.on(this.events.saveTimeframeM1, (timeframes, frame) => {
-            if (!frame) {
-                return;
-            }
+            if (!frame) return;
             setImmediate(async () => {
                 const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.M1;
                 console.time(timer);
@@ -43,9 +41,7 @@ class TimeframeEventEmitter {
             })
         });
         this.emitter.on(this.events.saveTimeframeM5, (symbols, frame) => {
-            if (!frame) {
-                return;
-            }
+            if (!frame) return;
             setImmediate(async () => {
                 const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.M5;
                 console.time(timer);
@@ -73,9 +69,7 @@ class TimeframeEventEmitter {
             });
         });
         this.emitter.on(this.events.saveTimeframeM15, (symbols, frame) => {
-            if (!frame) {
-                return;
-            }
+            if (!frame) return;
             setImmediate(async () => {
                 const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.M15;
                 console.time(timer);
@@ -107,9 +101,7 @@ class TimeframeEventEmitter {
             });
         });
         this.emitter.on(this.events.saveTimeframeM30, (symbols, frame) => {
-            if (!frame) {
-                return;
-            }
+            if (!frame) return;
             setImmediate(async () => {
                 const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.M30;
                 console.time(timer);
@@ -131,6 +123,83 @@ class TimeframeEventEmitter {
                     console.timeEnd(timer);
                     this.notifyTimeframes(timeframes, roundedFrameStart, CONSTANTS.FRAME_TYPES.M30);
                     this.emitter.emit(this.events.saveTimeframeH1, symbols, frame);
+                } catch (e) {
+                    console.log(e);
+                }
+            });
+        });
+        this.emitter.on(this.events.saveTimeframeH1, (symbols, frame) => {
+            if (!frame) return;
+            setImmediate(async () => {
+                const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.H1;
+                console.time(timer);
+                try {
+                    const momentFrame = moment(frame * 1000);
+                    const roundedFrameStart = momentFrame.minutes(0).unix();
+                    const roundedFrameEnd = moment(roundedFrameStart * 1000).add(1, 'hour').unix();
+                    const timeframes = {};
+                    for (let i = 0; i < symbols.length; i += 1) {
+                        timeframes[symbols[i]] = await this.calculateSymbol(symbols[i], CONSTANTS.FRAME_TYPES.M30, CONSTANTS.FRAME_TYPES.H1, roundedFrameStart, roundedFrameEnd);
+                    }
+                    console.timeEnd(timer);
+                    this.notifyTimeframes(timeframes, roundedFrameStart, CONSTANTS.FRAME_TYPES.H1);
+                    this.emitter.emit(this.events.saveTimeframeH4, symbols, frame);
+                } catch (e) {
+                    console.log(e);
+                }
+            });
+        });
+        this.emitter.on(this.events.saveTimeframeH4, (symbols, frame) => {
+            if (!frame) return;
+            setImmediate(async () => {
+                const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.H4;
+                console.time(timer);
+                try {
+                    const momentFrame = moment(frame * 1000);
+                    const HH = _.toSafeInteger(momentFrame.format('HH'));
+                    let hours;
+                    if (HH >= 0 && HH < 4) {
+                        hours = 0;
+                    } else if (HH >= 4 && HH < 8) {
+                        hours = 4;
+                    } else if (HH >= 8 && HH < 12) {
+                        hours = 8;
+                    } else if (HH >= 12 && HH < 16) {
+                        hours = 12;
+                    } else if (HH >= 16 && HH < 20) {
+                        hours = 16;
+                    } else {
+                        hours = 20;
+                    }
+                    const roundedFrameStart = momentFrame.hours(hours).minutes(0).unix();
+                    const roundedFrameEnd = moment(roundedFrameStart * 1000).add(4, 'hours').unix();
+                    const timeframes = {};
+                    for (let i = 0; i < symbols.length; i += 1) {
+                        timeframes[symbols[i]] = await this.calculateSymbol(symbols[i], CONSTANTS.FRAME_TYPES.H1, CONSTANTS.FRAME_TYPES.H4, roundedFrameStart, roundedFrameEnd);
+                    }
+                    console.timeEnd(timer);
+                    this.notifyTimeframes(timeframes, roundedFrameStart, CONSTANTS.FRAME_TYPES.H4);
+                    this.emitter.emit(this.events.saveTimeframeD1, symbols, frame);
+                } catch (e) {
+                    console.log(e);
+                }
+            });
+        });
+        this.emitter.on(this.events.saveTimeframeD1, (symbols, frame) => {
+            if (!frame) return;
+            setImmediate(async () => {
+                const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.D1;
+                console.time(timer);
+                try {
+                    const momentFrame = moment(frame * 1000);
+                    const roundedFrameStart = momentFrame.hours(0).minutes(0).unix();
+                    const roundedFrameEnd = moment(roundedFrameStart * 1000).add(1, 'day').unix();
+                    const timeframes = {};
+                    for (let i = 0; i < symbols.length; i += 1) {
+                        timeframes[symbols[i]] = await this.calculateSymbol(symbols[i], CONSTANTS.FRAME_TYPES.H4, CONSTANTS.FRAME_TYPES.D1, roundedFrameStart, roundedFrameEnd);
+                    }
+                    console.timeEnd(timer);
+                    this.notifyTimeframes(timeframes, roundedFrameStart, CONSTANTS.FRAME_TYPES.D1);
                 } catch (e) {
                     console.log(e);
                 }
