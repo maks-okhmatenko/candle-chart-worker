@@ -29,6 +29,10 @@ class Utils {
     static convertTickers(tickers){
         return _.map(_.keys(tickers), (symbol) => tickers[symbol]);
     }
+
+    static getTickerList(){
+        return _.map(_.split(_.toString(process.env.TICKER_LIST), ','), _.trim);
+    }
 }
 
 module.exports = Utils;

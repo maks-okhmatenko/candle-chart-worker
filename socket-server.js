@@ -34,6 +34,13 @@ module.exports = (io) => {
 function onNewWebsocketConnection(socket) {
     console.info(`Socket ${socket.id} has been connected.`);
 
+    socket.on('getGlobalConfig', () => {
+        socket.emit('onGlobalConfig', {
+            CONSTANTS,
+            TICKER_LIST: Utils.getTickerList()
+        });
+    });
+
     socket.on("disconnect", () => {
         timeframeSubscribers.delete(socket.id);
         console.info(`Socket ${socket.id} has been disconnected.`);

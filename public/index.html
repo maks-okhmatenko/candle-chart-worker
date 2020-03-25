@@ -29,32 +29,30 @@
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
-    const FRAME_TYPES = {
-        M1: 'M1',
-        M5: 'M5',
-        M15: 'M15',
-        M30: 'M30',
-        H1: 'H1',
-        H4: 'H4',
-        D1: 'D1'
-    };
     /** @returns {void} */
     async function main() {
         const socket = io();
         socket.on("connect", () => {
-            socket.once('initialTimeframes', (initialData) => {
-                console.log('initialTimeframes', initialData);
-                render(initialData);
+            socket.once('onGlobalConfig', (config) => {
+                console.log('onGlobalConfig', config);
+
+                socket.once('initialTimeframes', (initialData) => {
+                    console.log('initialTimeframes', initialData);
+                    render(initialData);
+
+                    socket.on('appendTimeframe', (dataItem) => {
+                        console.log('appendTimeframe', dataItem);
+                    });
+                });
+
+                socket.on('tickers', (tickers) => {
+                    console.log('tickers', tickers);
+                });
+
+                socket.emit('subscribeTimeframe', {symbol: config.TICKER_LIST[0], frameType: config.CONSTANTS.FRAME_TYPES.M1, from: 1585102721, to: 1585448321});
             });
 
-            socket.on('appendTimeframe', (dataItem) => {
-                console.log('appendTimeframe', dataItem);
-            });
-            socket.emit('subscribeTimeframe', {symbol: 'EURAUD', frameType: FRAME_TYPES.M1, from: 1585012180, to: 1585098580});
-
-            socket.on('tickers', (tickers) => {
-                console.log('tickers', tickers);
-            })
+            socket.emit('getGlobalConfig');
         });
         socket.on('disconnect', () => {
             socket.off('appendTimeframe');

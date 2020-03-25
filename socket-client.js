@@ -4,10 +4,11 @@ const moment = require('moment');
 const timeframeEventEmitter = require('./timeframe.event-emitter');
 const tickerEventEmitter = require('./ticker.event-emitter');
 const CONSTANTS = require('./constants');
+const Utils = require('./utils');
 
 module.exports = () => {
     const ws = new WebSocket(_.toString(process.env.WS_STREAM_URI));
-    const ticketListENV = _.map(_.split(_.toString(process.env.TICKER_LIST), ','), (ticket) => _.trim(ticket));
+    const ticketListENV = Utils.getTickerList();
     let timeframesList = {};
     let timeframeMinutes;
     let timeframeSeconds;
