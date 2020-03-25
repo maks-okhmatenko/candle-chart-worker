@@ -30,7 +30,7 @@ module.exports = () => {
     });
 
     function calculateTickers(messageList) {
-        const newFrame = moment().utc().startOf('second').unix();
+        const newFrame = moment.utc().startOf('second').unix();
         if (tickerFrame !== newFrame) {
             tickerEventEmitter.notifyTickers(_.extend({}, tickers));
             tickerFrame = newFrame;
@@ -44,8 +44,8 @@ module.exports = () => {
     }
 
     function calculateTimeframes(messageList) {
-        const newFrame = moment().utc().startOf('minute').unix();
-        const newFrameSeconds = moment().utc().startOf('seconds').unix();
+        const newFrame = moment.utc().startOf('minute').unix();
+        const newFrameSeconds = moment.utc().startOf('seconds').unix();
         if (timeframeSeconds !== newFrameSeconds) {
             timeframeEventEmitter.notifyTimeframes(_.extend({}, timeframesList), timeframeMinutes, CONSTANTS.FRAME_TYPES.M1);
             timeframeSeconds = newFrameSeconds;

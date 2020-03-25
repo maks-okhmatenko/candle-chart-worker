@@ -46,7 +46,7 @@ class TimeframeEventEmitter {
                 const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.M5;
                 console.time(timer);
                 try {
-                    const momentFrame = moment(frame * 1000);
+                    const momentFrame = moment.utc(frame * 1000);
                     const mm = _.toString(momentFrame.format('mm'));
                     const mm0 = _.toSafeInteger(mm[0]);
                     const mm1 = _.toSafeInteger(mm[1]);
@@ -55,7 +55,7 @@ class TimeframeEventEmitter {
                         minutes = 5;
                     }
                     const roundedFrameStart = momentFrame.minutes(_.toSafeInteger(`${mm0}${minutes}`)).unix();
-                    const roundedFrameEnd = moment(roundedFrameStart * 1000).add(5, 'minutes').unix();
+                    const roundedFrameEnd = moment.utc(roundedFrameStart * 1000).add(5, 'minutes').unix();
                     const timeframes = {};
                     for (let i = 0; i < symbols.length; i += 1) {
                         timeframes[symbols[i]] = await this.calculateSymbol(symbols[i], CONSTANTS.FRAME_TYPES.M1, CONSTANTS.FRAME_TYPES.M5, roundedFrameStart, roundedFrameEnd);
@@ -74,7 +74,7 @@ class TimeframeEventEmitter {
                 const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.M15;
                 console.time(timer);
                 try {
-                    const momentFrame = moment(frame * 1000);
+                    const momentFrame = moment.utc(frame * 1000);
                     const mm = _.toSafeInteger(momentFrame.format('mm'));
                     let minutes;
                     if (mm >= 0 && mm < 15) {
@@ -87,7 +87,7 @@ class TimeframeEventEmitter {
                         minutes = 45;
                     }
                     const roundedFrameStart = momentFrame.minutes(minutes).unix();
-                    const roundedFrameEnd = moment(roundedFrameStart * 1000).add(15, 'minutes').unix();
+                    const roundedFrameEnd = moment.utc(roundedFrameStart * 1000).add(15, 'minutes').unix();
                     const timeframes = {};
                     for (let i = 0; i < symbols.length; i += 1) {
                         timeframes[symbols[i]] = await this.calculateSymbol(symbols[i], CONSTANTS.FRAME_TYPES.M5, CONSTANTS.FRAME_TYPES.M15, roundedFrameStart, roundedFrameEnd);
@@ -106,7 +106,7 @@ class TimeframeEventEmitter {
                 const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.M30;
                 console.time(timer);
                 try {
-                    const momentFrame = moment(frame * 1000);
+                    const momentFrame = moment.utc(frame * 1000);
                     const mm = _.toSafeInteger(momentFrame.format('mm'));
                     let minutes;
                     if (mm >= 0 && mm < 30) {
@@ -115,7 +115,7 @@ class TimeframeEventEmitter {
                         minutes = 30;
                     }
                     const roundedFrameStart = momentFrame.minutes(minutes).unix();
-                    const roundedFrameEnd = moment(roundedFrameStart * 1000).add(30, 'minutes').unix();
+                    const roundedFrameEnd = moment.utc(roundedFrameStart * 1000).add(30, 'minutes').unix();
                     const timeframes = {};
                     for (let i = 0; i < symbols.length; i += 1) {
                         timeframes[symbols[i]] = await this.calculateSymbol(symbols[i], CONSTANTS.FRAME_TYPES.M15, CONSTANTS.FRAME_TYPES.M30, roundedFrameStart, roundedFrameEnd);
@@ -134,9 +134,9 @@ class TimeframeEventEmitter {
                 const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.H1;
                 console.time(timer);
                 try {
-                    const momentFrame = moment(frame * 1000);
+                    const momentFrame = moment.utc(frame * 1000);
                     const roundedFrameStart = momentFrame.minutes(0).unix();
-                    const roundedFrameEnd = moment(roundedFrameStart * 1000).add(1, 'hour').unix();
+                    const roundedFrameEnd = moment.utc(roundedFrameStart * 1000).add(1, 'hour').unix();
                     const timeframes = {};
                     for (let i = 0; i < symbols.length; i += 1) {
                         timeframes[symbols[i]] = await this.calculateSymbol(symbols[i], CONSTANTS.FRAME_TYPES.M30, CONSTANTS.FRAME_TYPES.H1, roundedFrameStart, roundedFrameEnd);
@@ -155,7 +155,7 @@ class TimeframeEventEmitter {
                 const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.H4;
                 console.time(timer);
                 try {
-                    const momentFrame = moment(frame * 1000);
+                    const momentFrame = moment.utc(frame * 1000);
                     const HH = _.toSafeInteger(momentFrame.format('HH'));
                     let hours;
                     if (HH >= 0 && HH < 4) {
@@ -172,7 +172,7 @@ class TimeframeEventEmitter {
                         hours = 20;
                     }
                     const roundedFrameStart = momentFrame.hours(hours).minutes(0).unix();
-                    const roundedFrameEnd = moment(roundedFrameStart * 1000).add(4, 'hours').unix();
+                    const roundedFrameEnd = moment.utc(roundedFrameStart * 1000).add(4, 'hours').unix();
                     const timeframes = {};
                     for (let i = 0; i < symbols.length; i += 1) {
                         timeframes[symbols[i]] = await this.calculateSymbol(symbols[i], CONSTANTS.FRAME_TYPES.H1, CONSTANTS.FRAME_TYPES.H4, roundedFrameStart, roundedFrameEnd);
@@ -191,9 +191,9 @@ class TimeframeEventEmitter {
                 const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.D1;
                 console.time(timer);
                 try {
-                    const momentFrame = moment(frame * 1000);
+                    const momentFrame = moment.utc(frame * 1000);
                     const roundedFrameStart = momentFrame.hours(0).minutes(0).unix();
-                    const roundedFrameEnd = moment(roundedFrameStart * 1000).add(1, 'day').unix();
+                    const roundedFrameEnd = moment.utc(roundedFrameStart * 1000).add(1, 'day').unix();
                     const timeframes = {};
                     for (let i = 0; i < symbols.length; i += 1) {
                         timeframes[symbols[i]] = await this.calculateSymbol(symbols[i], CONSTANTS.FRAME_TYPES.H4, CONSTANTS.FRAME_TYPES.D1, roundedFrameStart, roundedFrameEnd);
