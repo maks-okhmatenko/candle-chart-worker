@@ -1,9 +1,7 @@
 const timeframeEventEmitter = require('./timeframe.event-emitter');
 const tickerEventEmitter = require('./ticker.event-emitter');
 const Utils = require('./utils');
-const connectionResolver = require('./connection');
-const BaseRepository = require('./repository');
-const repository = new BaseRepository(connectionResolver);
+const repository = require('./repository');
 const _ = require('lodash');
 const CONSTANTS = require('./constants');
 

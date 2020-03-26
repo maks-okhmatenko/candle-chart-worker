@@ -42,6 +42,10 @@ class Utils {
     static getTimerLabel(frameType){
         return `save timeframes - ${frameType} - ${Utils.getReadableDateNow()}`;
     }
+
+    static isReadonlyMode(){
+        return _.toString(process.env.SERVICE_MODE) === 'readonly';
+    }
 }
 
 module.exports = Utils;

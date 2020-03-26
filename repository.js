@@ -1,5 +1,7 @@
 const _ = require('lodash');
 const moment = require('moment');
+const connectionResolver = require('./connection');
+const Utils = require('./utils');
 
 class Repository {
     constructor(resolver) {
@@ -12,10 +14,13 @@ class Repository {
     }
 
     async upsert(collection, record) {
-        const result = await collection.updateOne({frame: record.frame}, {
-            $set: _.extend({}, record, {updated_at: moment.utc().unix()}),
-        }, {upsert: true});
-        return _.first(result.ops);
+        if (!Utils.isReadonlyMode()) {
+            console.log('upsert');
+            const result = await collection.updateOne({frame: record.frame}, {
+                $set: _.extend({}, record, {updated_at: moment.utc().unix()}),
+            }, {upsert: true});
+            return _.first(result.ops);
+        }
     }
 
     async getAll(collection, {query = {}, sort = {}, skip = 0, limit = 10, project = {}}) {
@@ -31,4 +36,4 @@ class Repository {
 
 }
 
-module.exports = Repository;
+module.exports = new Repository(connectionResolver);

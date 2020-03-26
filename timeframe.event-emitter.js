@@ -1,7 +1,6 @@
 const Utils = require('./utils');
 const EventEmitter = require('events');
-const connectionResolver = require('./connection');
-const BaseRepository = require('./repository');
+const repository = require('./repository');
 const _ = require('lodash');
 const CONSTANTS = require('./constants');
 const moment = require('moment');
@@ -18,8 +17,6 @@ class TimeframeEventEmitter {
             saveTimeframeD1: 'saveTimeframeD1Event',
             update: 'updateEvent'
         };
-        this.repository = new BaseRepository(connectionResolver);
-
         this.emitter = new EventEmitter();
         this.emitter.on(this.events.saveTimeframeM1, (timeframes, frame) => {
             if (!frame) return;
@@ -30,8 +27,8 @@ class TimeframeEventEmitter {
                     const symbols = _.keys(timeframes);
                     for (let i = 0; i < symbols.length; i += 1) {
                         const symbol = symbols[i];
-                        const collection = await this.repository.getCollection(symbol, CONSTANTS.FRAME_TYPES.M1);
-                        await this.repository.upsert(collection, _.extend({}, timeframes[symbol], {frame}));
+                        const collection = await repository.getCollection(symbol, CONSTANTS.FRAME_TYPES.M1);
+                        await repository.upsert(collection, _.extend({}, timeframes[symbol], {frame}));
                     }
                     console.timeEnd(timer);
                     this.emitter.emit(this.events.saveTimeframeM5, symbols, frame);
@@ -221,9 +218,9 @@ class TimeframeEventEmitter {
     }
 
     async calculateSymbol(symbol, baseFrameType, currentFrameType, frameStart, frameEnd) {
-        const baseCollection = await this.repository.getCollection(symbol, baseFrameType);
-        const currentCollection = await this.repository.getCollection(symbol, currentFrameType);
-        const symbolListObject = await this.repository.getAll(baseCollection, {
+        const baseCollection = await repository.getCollection(symbol, baseFrameType);
+        const currentCollection = await repository.getCollection(symbol, currentFrameType);
+        const symbolListObject = await repository.getAll(baseCollection, {
             query: {frame: {$gte: frameStart, $lt: frameEnd}},
             sort: {property: 'frame', direction: 1}
         });
@@ -249,10 +246,10 @@ class TimeframeEventEmitter {
                     _.set(record, ['low'], model.low);
                 }
             });
-            await this.repository.upsert(currentCollection, _.extend(record, {frame: frameStart}));
+            await repository.upsert(currentCollection, _.extend(record, {frame: frameStart}));
             return record;
         }
-        await this.repository.upsert(currentCollection, _.extend(startRecord, {frame: frameStart}));
+        await repository.upsert(currentCollection, _.extend(startRecord, {frame: frameStart}));
         return startRecord;
     }
 }
