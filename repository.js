@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const moment = require('moment');
 
 class Repository {
     constructor(resolver) {
@@ -12,10 +13,7 @@ class Repository {
 
     async upsert(collection, record) {
         const result = await collection.updateOne({frame: record.frame}, {
-            $set: record,
-            $currentDate: {
-                lastModified: true,
-            }
+            $set: _.extend({}, record, {updated_at: moment.utc().unix()}),
         }, {upsert: true});
         return _.first(result.ops);
     }
