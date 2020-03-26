@@ -51,7 +51,7 @@ module.exports = () => {
             timeframeSeconds = newFrameSeconds;
         }
         if (timeframeMinutes !== newFrame) {
-            timeframeEventEmitter.saveTimeframesM1(_.extend({}, timeframesList), timeframeMinutes);
+            timeframeEventEmitter.saveAllTimeframes(_.extend({}, timeframesList), timeframeMinutes);
             timeframeMinutes = newFrame;
             timeframesList = {};
         }

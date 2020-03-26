@@ -24,7 +24,7 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeM1, (timeframes, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.M1;
+                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.M1);
                 console.time(timer);
                 try {
                     const symbols = _.keys(timeframes);
@@ -43,7 +43,7 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeM5, (symbols, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.M5;
+                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.M5);
                 console.time(timer);
                 try {
                     const momentFrame = moment.utc(frame * 1000);
@@ -71,7 +71,7 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeM15, (symbols, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.M15;
+                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.M15);
                 console.time(timer);
                 try {
                     const momentFrame = moment.utc(frame * 1000);
@@ -103,7 +103,7 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeM30, (symbols, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.M30;
+                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.M30);
                 console.time(timer);
                 try {
                     const momentFrame = moment.utc(frame * 1000);
@@ -131,7 +131,7 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeH1, (symbols, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.H1;
+                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.H1);
                 console.time(timer);
                 try {
                     const momentFrame = moment.utc(frame * 1000);
@@ -152,7 +152,7 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeH4, (symbols, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.H4;
+                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.H4);
                 console.time(timer);
                 try {
                     const momentFrame = moment.utc(frame * 1000);
@@ -188,7 +188,7 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeD1, (symbols, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = 'save timeframes' + CONSTANTS.FRAME_TYPES.D1;
+                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.D1);
                 console.time(timer);
                 try {
                     const momentFrame = moment.utc(frame * 1000);
@@ -207,8 +207,8 @@ class TimeframeEventEmitter {
         });
     }
 
-    saveTimeframesM1(timeframes, frame) {
-        console.log('saveTimeframesM1', _.keys(timeframes).length, frame);
+    saveAllTimeframes(timeframes, frame) {
+        console.log('saveAllTimeframes', _.keys(timeframes).length, frame);
         this.emitter.emit(this.events.saveTimeframeM1, timeframes, frame);
     }
 

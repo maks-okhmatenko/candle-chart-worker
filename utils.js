@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const moment = require('moment');
 
 class Utils {
     static convertTimeframes(timeframes, frame, frameType) {
@@ -32,6 +33,14 @@ class Utils {
 
     static getTickerList(){
         return _.map(_.split(_.toString(process.env.TICKER_LIST), ','), _.trim);
+    }
+
+    static getReadableDateNow(){
+        return moment.utc().format('DD.MM.YYYY HH:mm:ss');
+    }
+
+    static getTimerLabel(frameType){
+        return `save timeframes - ${frameType} - ${Utils.getReadableDateNow()}`;
     }
 }
 
