@@ -23,18 +23,27 @@
 </head>
 <body>
 <p>Clients online: <span id="online"></span></p>
+<label for="timeframes">Choose a car:</label>
+
+<select id="timeframes" onchange="onChangeSelect(this)">
+    <option value="EURAUD">EURAUD</option>
+    <option value="EURCAD">EURCAD</option>
+    <option value="EURCHF">EURCHF</option>
+</select>
 <div id="chart"></div>
 
 <!-- this link is magically provided by socket.io -->
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
-    /** @returns {void} */
+    let socket;
+    let globalConfig;
     async function main() {
-        const socket = io();
+        socket = io();
         socket.on("connect", () => {
             socket.once('onGlobalConfig', (config) => {
                 console.log('onGlobalConfig', config);
+                globalConfig = config;
 
                 socket.once('initialTimeframes', (initialData) => {
                     console.log('initialTimeframes', initialData);
@@ -49,7 +58,7 @@
                     console.log('tickers', tickers);
                 });
 
-                socket.emit('subscribeTimeframe', {symbol: config.TICKER_LIST[0], frameType: config.CONSTANTS.FRAME_TYPES.M5, from: 1585237432, to: 1585338232});
+                socket.emit('subscribeTimeframe', {symbol: globalConfig.TICKER_LIST[0], frameType: globalConfig.CONSTANTS.FRAME_TYPES.M1, from: 1585237432, to: 1585338232});
             });
 
             socket.emit('getGlobalConfig');
@@ -61,6 +70,20 @@
 
         const onlineElement = document.getElementById("online");
         socket.on("online", online => onlineElement.innerText = online.toString());
+    }
+
+    function onChangeSelect(element) {
+        console.log(element.value);
+        socket.off('appendTimeframe');
+        socket.once('initialTimeframes', (initialData) => {
+            console.log('initialTimeframes', initialData);
+            updateChart(initialData);
+
+            socket.on('appendTimeframe', (dataItem) => {
+                console.log('appendTimeframe', dataItem);
+            });
+        });
+        socket.emit('subscribeTimeframe', {symbol: element.value, frameType: globalConfig.CONSTANTS.FRAME_TYPES.M1, from: 1585237432, to: 1585338232});
     }
 
     main();
@@ -99,6 +122,14 @@
             chart = new ApexCharts(document.querySelector("#chart"), options);
             chart.render();
         }
+    }
+
+    function updateChart(data) {
+        const options = {
+            series: [{data: prepareData(data)}],
+        };
+        chart.updateOptions(options);
+
     }
 </script>
 
