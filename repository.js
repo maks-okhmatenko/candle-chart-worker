@@ -10,13 +10,13 @@ class Repository {
         return db.collection(`${symbol}_${frameType}`);
     }
 
-    async insert(collection, record) {
-        const result = await collection.insertOne(record);
-        return _.first(result.ops);
-    }
-
     async upsert(collection, record) {
-        const result = await collection.updateOne({frame: record.frame}, {$set: record}, {upsert: true});
+        const result = await collection.updateOne({frame: record.frame}, {
+            $set: record,
+            $currentDate: {
+                lastModified: true,
+            }
+        }, {upsert: true});
         return _.first(result.ops);
     }
 
