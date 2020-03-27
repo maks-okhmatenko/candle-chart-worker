@@ -12,6 +12,7 @@ module.exports = () => {
     let timeframesList = {};
     let timeframeMinutes;
     let timeframeSeconds;
+    let timeframeMilliseconds;
 
     let tickers = {};
     let tickerFrame;
@@ -30,13 +31,13 @@ module.exports = () => {
     });
 
     function calculateTickers(messageList) {
-        const newFrame = moment.utc().startOf('second').unix();
+        const newFrame = Utils.getNewTickerFrameInMilliseconds();
         if (tickerFrame !== newFrame) {
             tickerEventEmitter.notifyTickers(_.extend({}, tickers));
             tickerFrame = newFrame;
         }
         _.each(messageList, (messageItem) => {
-            if (!_.includes(ticketListENV, messageItem.Symbol)) {
+            if (ticketListENV.length && !_.includes(ticketListENV, messageItem.Symbol)) {
                 return;
             }
             _.set(tickers, [messageItem.Symbol], _.extend({}, messageItem, {Time: newFrame}));
@@ -44,19 +45,23 @@ module.exports = () => {
     }
 
     function calculateTimeframes(messageList) {
-        const newFrame = moment.utc().startOf('minute').unix();
-        const newFrameSeconds = moment.utc().startOf('seconds').unix();
-        if (timeframeSeconds !== newFrameSeconds) {
+        const newFrameMinutes = moment.utc().startOf('minute').unix();
+        const newFrameMilliseconds = Utils.getNewTickerFrameInMilliseconds();
+        const newFrameSeconds = Utils.getNewTimeframeInSeconds();
+        if (timeframeMilliseconds !== newFrameMilliseconds) {
             timeframeEventEmitter.notifyTimeframes(_.extend({}, timeframesList), timeframeMinutes, CONSTANTS.FRAME_TYPES.M1);
+            timeframeMilliseconds = newFrameMilliseconds;
+        }
+        if (timeframeSeconds !== newFrameSeconds) {
+            timeframeEventEmitter.saveAllTimeframes(_.extend({}, timeframesList), timeframeMinutes);
             timeframeSeconds = newFrameSeconds;
         }
-        if (timeframeMinutes !== newFrame) {
-            timeframeEventEmitter.saveAllTimeframes(_.extend({}, timeframesList), timeframeMinutes);
-            timeframeMinutes = newFrame;
+        if (timeframeMinutes !== newFrameMinutes) {
             timeframesList = {};
+            timeframeMinutes = newFrameMinutes;
         }
         _.each(messageList, (messageItem) => {
-            if (!_.includes(ticketListENV, messageItem.Symbol)) {
+            if (ticketListENV.length && !_.includes(ticketListENV, messageItem.Symbol)) {
                 return;
             }
             const timeframeItem = _.get(timeframesList, [messageItem.Symbol]);

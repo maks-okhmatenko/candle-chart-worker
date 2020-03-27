@@ -15,7 +15,6 @@ class Repository {
 
     async upsert(collection, record) {
         if (!Utils.isReadonlyMode()) {
-            console.log('upsert');
             const result = await collection.updateOne({frame: record.frame}, {
                 $set: _.extend({}, record, {updated_at: moment.utc().unix()}),
             }, {upsert: true});

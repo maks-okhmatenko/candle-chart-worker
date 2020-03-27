@@ -58,7 +58,7 @@
                     console.log('tickers', tickers);
                 });
 
-                socket.emit('subscribeTimeframe', {symbol: globalConfig.TICKER_LIST[0], frameType: globalConfig.CONSTANTS.FRAME_TYPES.M1, from: 1585237432, to: 1585338232});
+                socket.emit('subscribeTimeframe', {symbol: globalConfig.TICKER_LIST[0], frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, from: 1585237432, to: 1585338232});
             });
 
             socket.emit('getGlobalConfig');
@@ -83,7 +83,7 @@
                 console.log('appendTimeframe', dataItem);
             });
         });
-        socket.emit('subscribeTimeframe', {symbol: element.value, frameType: globalConfig.CONSTANTS.FRAME_TYPES.M1, from: 1585237432, to: 1585338232});
+        socket.emit('subscribeTimeframe', {symbol: element.value, frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, from: 1585237432, to: 1585338232});
     }
 
     main();
