@@ -21,14 +21,14 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeM1, (timeframes, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.M1);
-                console.time(timer);
                 try {
+                    const timer = Utils.getTimeframesTimerLabel(CONSTANTS.FRAME_TYPES.M1);
+                    console.time(timer);
                     const symbols = _.keys(timeframes);
                     for (let i = 0; i < symbols.length; i += 1) {
                         const symbol = symbols[i];
-                        const collection = await repository.getCollection(symbol, CONSTANTS.FRAME_TYPES.M1);
-                        await repository.upsert(collection, _.extend({}, timeframes[symbol], {frame}));
+                        const collection = await repository.getTimeframeCollection(symbol, CONSTANTS.FRAME_TYPES.M1);
+                        await repository.upsertTimeframe(collection, _.extend({}, timeframes[symbol], {frame}));
                     }
                     console.timeEnd(timer);
                     this.emitter.emit(this.events.saveTimeframeM5, symbols, frame);
@@ -40,9 +40,9 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeM5, (symbols, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.M5);
-                console.time(timer);
                 try {
+                    const timer = Utils.getTimeframesTimerLabel(CONSTANTS.FRAME_TYPES.M5);
+                    console.time(timer);
                     const momentFrame = moment.utc(frame * 1000);
                     const mm = _.toString(momentFrame.format('mm'));
                     const mm0 = _.toSafeInteger(mm[0]);
@@ -68,9 +68,9 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeM15, (symbols, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.M15);
-                console.time(timer);
                 try {
+                    const timer = Utils.getTimeframesTimerLabel(CONSTANTS.FRAME_TYPES.M15);
+                    console.time(timer);
                     const momentFrame = moment.utc(frame * 1000);
                     const mm = _.toSafeInteger(momentFrame.format('mm'));
                     let minutes;
@@ -100,9 +100,9 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeM30, (symbols, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.M30);
-                console.time(timer);
                 try {
+                    const timer = Utils.getTimeframesTimerLabel(CONSTANTS.FRAME_TYPES.M30);
+                    console.time(timer);
                     const momentFrame = moment.utc(frame * 1000);
                     const mm = _.toSafeInteger(momentFrame.format('mm'));
                     let minutes;
@@ -128,9 +128,9 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeH1, (symbols, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.H1);
-                console.time(timer);
                 try {
+                    const timer = Utils.getTimeframesTimerLabel(CONSTANTS.FRAME_TYPES.H1);
+                    console.time(timer);
                     const momentFrame = moment.utc(frame * 1000);
                     const roundedFrameStart = momentFrame.minutes(0).unix();
                     const roundedFrameEnd = moment.utc(roundedFrameStart * 1000).add(1, 'hour').unix();
@@ -149,9 +149,9 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeH4, (symbols, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.H4);
-                console.time(timer);
                 try {
+                    const timer = Utils.getTimeframesTimerLabel(CONSTANTS.FRAME_TYPES.H4);
+                    console.time(timer);
                     const momentFrame = moment.utc(frame * 1000);
                     const HH = _.toSafeInteger(momentFrame.format('HH'));
                     let hours;
@@ -185,9 +185,9 @@ class TimeframeEventEmitter {
         this.emitter.on(this.events.saveTimeframeD1, (symbols, frame) => {
             if (!frame) return;
             setImmediate(async () => {
-                const timer = Utils.getTimerLabel(CONSTANTS.FRAME_TYPES.D1);
-                console.time(timer);
                 try {
+                    const timer = Utils.getTimeframesTimerLabel(CONSTANTS.FRAME_TYPES.D1);
+                    console.time(timer);
                     const momentFrame = moment.utc(frame * 1000);
                     const roundedFrameStart = momentFrame.hours(0).minutes(0).unix();
                     const roundedFrameEnd = moment.utc(roundedFrameStart * 1000).add(1, 'day').unix();
@@ -218,8 +218,8 @@ class TimeframeEventEmitter {
     }
 
     async calculateSymbol(symbol, baseFrameType, currentFrameType, frameStart, frameEnd) {
-        const baseCollection = await repository.getCollection(symbol, baseFrameType);
-        const currentCollection = await repository.getCollection(symbol, currentFrameType);
+        const baseCollection = await repository.getTimeframeCollection(symbol, baseFrameType);
+        const currentCollection = await repository.getTimeframeCollection(symbol, currentFrameType);
         const symbolListObject = await repository.getAll(baseCollection, {
             query: {frame: {$gte: frameStart, $lt: frameEnd}},
             sort: {property: 'frame', direction: 1}
@@ -246,10 +246,10 @@ class TimeframeEventEmitter {
                     _.set(record, ['low'], model.low);
                 }
             });
-            await repository.upsert(currentCollection, _.extend(record, {frame: frameStart}));
+            await repository.upsertTimeframe(currentCollection, _.extend(record, {frame: frameStart}));
             return record;
         }
-        await repository.upsert(currentCollection, _.extend(startRecord, {frame: frameStart}));
+        await repository.upsertTimeframe(currentCollection, _.extend(startRecord, {frame: frameStart}));
         return startRecord;
     }
 }

@@ -18,13 +18,20 @@ class Utils {
         return result;
     }
 
-    static convertModel(model, symbol, frameType) {
+    static convertTimeframeModel(model, symbol, frameType) {
         return {
             frameType,
             symbol,
             x: model.frame,
             y: [model.open, model.high, model.low, model.close]
         }
+    }
+
+    static convertTickerModel(model){
+        const convertedModel = _.extend({}, model);
+        delete convertedModel._id;
+        delete convertedModel.updated_at;
+        return convertedModel;
     }
 
     static convertTickers(tickers) {
@@ -43,8 +50,12 @@ class Utils {
         return moment.utc().format('DD.MM.YYYY HH:mm:ss');
     }
 
-    static getTimerLabel(frameType) {
+    static getTimeframesTimerLabel(frameType) {
         return `save timeframes - ${frameType} - ${Utils.getReadableDateNow()}`;
+    }
+
+    static getTickersTimerLabel() {
+        return `save tickers - ${Utils.getReadableDateNow()}`;
     }
 
     static isReadonlyMode() {

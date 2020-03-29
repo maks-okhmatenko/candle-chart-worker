@@ -6,6 +6,7 @@ const _ = require('lodash');
 const CONSTANTS = require('./constants');
 
 const timeframeSubscribers = new Map();
+const tickerSubscribers = new Set();
 
 module.exports = (io) => {
     io.on('connection', onNewWebsocketConnection);
@@ -18,14 +19,17 @@ module.exports = (io) => {
         for (let [key, value] of timeframeSubscribers) {
             const updateItem = _.find(data, {symbol: value.symbol, frameType: value.frameType});
             if (updateItem) {
-                console.log('io.to', key, JSON.stringify(updateItem));
-                io.to(`${key}`).emit('appendTimeframe', updateItem);
+                console.log('io.to timeframe', key, JSON.stringify(updateItem));
+                io.to(`${key}`).emit('onAppendTimeframe', updateItem);
             }
         }
     });
 
     tickerEventEmitter.subscribeOnUpdate((data) => {
-        io.emit('tickers', data);
+        for (const subscriberId of tickerSubscribers) {
+            console.log('io.to ticker', subscriberId, JSON.stringify(data));
+            io.to(`${subscriberId}`).emit('onUpdateTickers', data);
+        }
     });
 };
 
@@ -44,6 +48,16 @@ function onNewWebsocketConnection(socket) {
         console.info(`Socket ${socket.id} has been disconnected.`);
     });
 
+    socket.on('subscribeTickers', () => {
+        tickerSubscribers.add(socket.id);
+        setImmediate(async () => {
+            console.log('ticker subscriber', socket.id);
+            const collection = await repository.getTickerCollection();
+            const tickerList = await repository.getAll(collection);
+            socket.emit('onInitialTickers', tickerList.results.map(Utils.convertTickerModel));
+        });
+    });
+
     socket.on('subscribeTimeframe', (data) => {
         if (!CONSTANTS.FRAME_TYPES[data.frameType]) {
             return;
@@ -56,8 +70,8 @@ function onNewWebsocketConnection(socket) {
         };
         timeframeSubscribers.set(socket.id, subscriber);
         setImmediate(async () => {
-            console.log('subscriber', socket.id, JSON.stringify(subscriber));
-            const collection = await repository.getCollection(subscriber.symbol, subscriber.frameType);
+            console.log('timeframe subscriber', socket.id, JSON.stringify(subscriber));
+            const collection = await repository.getTimeframeCollection(subscriber.symbol, subscriber.frameType);
             const symbolList = await repository.getAll(collection, {
                 query: {
                     frame: {
@@ -70,8 +84,8 @@ function onNewWebsocketConnection(socket) {
                     direction: 1
                 }
             });
-            socket.emit('initialTimeframes', symbolList.results.map((model) => {
-                return Utils.convertModel(model, subscriber.symbol, subscriber.frameType);
+            socket.emit('onInitialTimeframes', symbolList.results.map((model) => {
+                return Utils.convertTimeframeModel(model, subscriber.symbol, subscriber.frameType);
             }));
         });
     });

@@ -15,32 +15,44 @@ module.exports = () => {
     let timeframeMilliseconds;
 
     let tickers = {};
-    let tickerFrame;
+    let tickerFrameMilliseconds;
+    let tickerFrameSeconds;
 
     ws.on('open', function open() {
         console.log('ws open');
     });
 
-    ws.on('message', async function incoming(data) {
-        const messageList = JSON.parse(data);
-        if (!_.isArray(messageList)) {
-            return;
+    ws.on('message', incoming);
+
+    function incoming(data) {
+        try {
+            const messageList = JSON.parse(data);
+            if (!_.isArray(messageList)) {
+                return;
+            }
+            calculateTickers(messageList);
+            calculateTimeframes(messageList);
+        } catch (e) {
+            console.log('invalid message', data);
         }
-        calculateTickers(messageList);
-        calculateTimeframes(messageList);
-    });
+    }
 
     function calculateTickers(messageList) {
-        const newFrame = Utils.getNewTickerFrameInMilliseconds();
-        if (tickerFrame !== newFrame) {
+        const newFrameMilliseconds = Utils.getNewTickerFrameInMilliseconds();
+        const newFrameSeconds = Utils.getNewTimeframeInSeconds();
+        if (tickerFrameMilliseconds !== newFrameMilliseconds) {
             tickerEventEmitter.notifyTickers(_.extend({}, tickers));
-            tickerFrame = newFrame;
+            tickerFrameMilliseconds = newFrameMilliseconds;
+        }
+        if (tickerFrameSeconds !== newFrameSeconds) {
+            tickerEventEmitter.saveTickers(_.extend({}, tickers));
+            tickerFrameSeconds = newFrameSeconds;
         }
         _.each(messageList, (messageItem) => {
             if (ticketListENV.length && !_.includes(ticketListENV, messageItem.Symbol)) {
                 return;
             }
-            _.set(tickers, [messageItem.Symbol], _.extend({}, messageItem, {Time: newFrame}));
+            _.set(tickers, [messageItem.Symbol], _.extend({}, messageItem, {Time: newFrameMilliseconds}));
         });
     }
 

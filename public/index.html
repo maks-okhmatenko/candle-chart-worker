@@ -45,27 +45,31 @@
                 console.log('onGlobalConfig', config);
                 globalConfig = config;
 
-                socket.once('initialTimeframes', (initialData) => {
-                    console.log('initialTimeframes', initialData);
+                socket.once('onInitialTimeframes', (initialData) => {
+                    console.log('onInitialTimeframes', initialData);
                     render(initialData);
 
-                    socket.on('appendTimeframe', (dataItem) => {
-                        console.log('appendTimeframe', dataItem);
+                    socket.on('onAppendTimeframe', (dataItem) => {
+                        console.log('onAppendTimeframe', dataItem);
                     });
                 });
 
-                socket.on('tickers', (tickers) => {
-                    console.log('tickers', tickers);
+                socket.once('onInitialTickers', (initialData) => {
+                    console.log('onInitialTickers', initialData);
+                    socket.on('onUpdateTickers', (tickers) => {
+                        console.log('onUpdateTickers', tickers);
+                    });
                 });
 
                 socket.emit('subscribeTimeframe', {symbol: globalConfig.TICKER_LIST[0], frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, from: 1585237432, to: 1585338232});
+                socket.emit('subscribeTickers');
             });
 
             socket.emit('getGlobalConfig');
         });
         socket.on('disconnect', () => {
-            socket.off('appendTimeframe');
-            socket.off('tickers');
+            socket.off('onAppendTimeframe');
+            socket.off('onUpdateTickers');
         });
 
         const onlineElement = document.getElementById("online");
@@ -74,13 +78,13 @@
 
     function onChangeSelect(element) {
         console.log(element.value);
-        socket.off('appendTimeframe');
-        socket.once('initialTimeframes', (initialData) => {
-            console.log('initialTimeframes', initialData);
+        socket.off('onAppendTimeframe');
+        socket.once('onInitialTimeframes', (initialData) => {
+            console.log('onInitialTimeframes', initialData);
             updateChart(initialData);
 
-            socket.on('appendTimeframe', (dataItem) => {
-                console.log('appendTimeframe', dataItem);
+            socket.on('onAppendTimeframe', (dataItem) => {
+                console.log('onAppendTimeframe', dataItem);
             });
         });
         socket.emit('subscribeTimeframe', {symbol: element.value, frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, from: 1585237432, to: 1585338232});
