@@ -7,9 +7,10 @@ class ConnectionResolver {
         this.dbName = _.toString(process.env.MONGO_DB_NAME);
         process.on('SIGINT', cleanup);
         process.on('SIGTERM', cleanup);
+
         function cleanup() {
             console.log('cleanup');
-            if(this.client){
+            if (this.client) {
                 this.client.close();
             }
             process.exit();
@@ -27,7 +28,12 @@ class ConnectionResolver {
                 console.timeEnd('mongodb connect');
                 this.db = this.client.db(this.dbName);
             } catch (e) {
-                console.error(e);
+                console.log(e);
+                if (this.client) {
+                    await this.client.close();
+                    delete this.db;
+                }
+                return await this.getConnection();
             }
         }
 
