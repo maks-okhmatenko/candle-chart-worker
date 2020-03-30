@@ -125,5 +125,3 @@ const data = [{
     Time: 1585475414666
 }]
 ```
-
-##### subscribeTimeframe
