@@ -51,8 +51,9 @@ npm start
 #### Client to server
 - **getGlobalConfig** - getting configuration from the server
 - **subscribeTimeframe** - subscription on the timeframe update
+- **getTimeframeByRange** - get timeframe from the database by range
 ```javascript
-// request data
+// request data for subscribeTimeframe and getTimeframesByRange events
 const data = {
     symbol: globalConfig.TICKER_LIST[0], // ticker name from the TICKER_LIST
     frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, // frame type: M1, M5, M15, M30, H1, H4, D1
@@ -102,6 +103,16 @@ const data = {
     x: 1585251600, // unix timestamp
     y: ['1.81499', '1.81509', '1.81408', '1.81446'] // values: [open, high, low, close] 
 }
+```
+- **onTimeframeByRange** - an answer on **getTimeframeByRange** event
+```javascript
+// response data
+const data = [{
+    frameType: 'M5', // frame type
+    symbol: 'EURAUD', // ticker symbol
+    x: 1585251600, // unix timestamp
+    y: ['1.81499', '1.81509', '1.81408', '1.81446'] // values: [open, high, low, close] 
+}]
 ```
 - **onInitialTickers** - an answer on **subscribeTickers** event, should be listened only once, it will send initial tickers state
 - **onUpdateTickers** - an answer on **subscribeTickers** event, it will send tickers update

@@ -60,6 +60,23 @@ class Repository {
         return {total, results};
     }
 
+    async getTimeframesByRange(symbol, frameType, from, to){
+        const collection = await this.getTimeframeCollection(symbol, frameType);
+        const list = await this.getAll(collection, {
+            query: {
+                frame: {
+                    $gte: from,
+                    $lte: to
+                }
+            },
+            sort: {
+                property: 'frame',
+                direction: 1
+            }
+        });
+        return list.results.map(model => Utils.convertTimeframeModel(model, symbol, frameType))
+    }
+
 }
 
 module.exports = new Repository(connectionResolver);

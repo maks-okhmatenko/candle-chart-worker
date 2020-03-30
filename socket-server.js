@@ -71,22 +71,25 @@ function onNewWebsocketConnection(socket) {
         timeframeSubscribers.set(socket.id, subscriber);
         setImmediate(async () => {
             console.log('timeframe subscriber', socket.id, JSON.stringify(subscriber));
-            const collection = await repository.getTimeframeCollection(subscriber.symbol, subscriber.frameType);
-            const symbolList = await repository.getAll(collection, {
-                query: {
-                    frame: {
-                        $gte: subscriber.from,
-                        $lte: subscriber.to
-                    }
-                },
-                sort: {
-                    property: 'frame',
-                    direction: 1
-                }
-            });
-            socket.emit('onInitialTimeframes', symbolList.results.map((model) => {
-                return Utils.convertTimeframeModel(model, subscriber.symbol, subscriber.frameType);
-            }));
+            const list = await repository.getTimeframesByRange(subscriber.symbol, subscriber.frameType, subscriber.from, subscriber.to);
+            socket.emit('onInitialTimeframes', list);
+        });
+    });
+
+    socket.on('getTimeframeByRange', (data) => {
+        if (!CONSTANTS.FRAME_TYPES[data.frameType]) {
+            return;
+        }
+        const requestData = {
+            symbol: data.symbol,
+            frameType: data.frameType,
+            from: data.from,
+            to: data.to
+        };
+        setImmediate(async () => {
+            console.log('get timeframe by range', socket.id, JSON.stringify(requestData));
+            const list = await repository.getTimeframesByRange(requestData.symbol, requestData.frameType, requestData.from, requestData.to);
+            socket.emit('onTimeframeByRange', list);
         });
     });
 }
