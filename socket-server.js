@@ -54,7 +54,11 @@ function onNewWebsocketConnection(socket) {
         setImmediate(async () => {
             console.log('ticker subscriber', socket.id);
             const collection = await repository.getTickerCollection();
-            const tickerList = await repository.getAll(collection);
+            const tickerList = await repository.getAll(collection, {
+                query: {
+                    Symbol: {$in: Utils.getTickerList()}
+                }
+            });
             socket.emit('onInitialTickers', tickerList.results.map(Utils.convertTickerModel));
         });
     });
