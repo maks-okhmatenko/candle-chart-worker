@@ -45,6 +45,7 @@ function onNewWebsocketConnection(socket) {
 
     socket.on("disconnect", () => {
         timeframeSubscribers.delete(socket.id);
+        tickerSubscribers.delete(socket.id);
         console.info(`Socket ${socket.id} has been disconnected.`);
     });
 
