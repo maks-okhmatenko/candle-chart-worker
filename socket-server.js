@@ -27,7 +27,7 @@ module.exports = (io) => {
 
     tickerEventEmitter.subscribeOnUpdate((data) => {
         for (const subscriberId of tickerSubscribers) {
-            console.log('io.to ticker', subscriberId, JSON.stringify(data));
+            console.log('io.to ticker', subscriberId);
             io.to(`${subscriberId}`).emit('onUpdateTickers', data);
         }
     });
