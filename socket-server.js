@@ -97,4 +97,21 @@ function onNewWebsocketConnection(socket) {
             socket.emit('onTimeframeByRange', list);
         });
     });
+
+    socket.on('getTimeframeByCount', (data) => {
+        if (!CONSTANTS.FRAME_TYPES[data.frameType]) {
+            return;
+        }
+        const requestData = {
+            symbol: data.symbol,
+            frameType: data.frameType,
+            from: data.from,
+            count: _.toSafeInteger(data.count),
+        };
+        setImmediate(async () => {
+            console.log('get timeframe by count', socket.id, JSON.stringify(requestData));
+            const list = await repository.getTimeframesByCount(requestData.symbol, requestData.frameType, requestData.from, requestData.count);
+            socket.emit('onTimeframeByCount', list);
+        });
+    });
 }

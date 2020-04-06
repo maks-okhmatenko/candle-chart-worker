@@ -49,10 +49,14 @@ class Repository {
         }
     }
 
-    async getAll(collection, {query = {}, sort = {}, skip = 0, limit = 10, project = {}} = {}) {
-        const cursor = _.isEmpty(sort) ?
+    async getAll(collection, {query = {}, sort = {}, skip = 0, limit, project = {}} = {}) {
+        let cursor = _.isEmpty(sort) ?
             collection.find(query).project(project).skip(skip) :
             collection.find(query).project(project).sort(sort.property, sort.direction).skip(skip);
+
+        if (limit) {
+            cursor = cursor.limit(limit);
+        }
 
         const total = await cursor.count();
         const results = await cursor.toArray();
@@ -60,7 +64,7 @@ class Repository {
         return {total, results};
     }
 
-    async getTimeframesByRange(symbol, frameType, from, to){
+    async getTimeframesByRange(symbol, frameType, from, to) {
         const collection = await this.getTimeframeCollection(symbol, frameType);
         const list = await this.getAll(collection, {
             query: {
@@ -73,6 +77,23 @@ class Repository {
                 property: 'frame',
                 direction: 1
             }
+        });
+        return list.results.map(model => Utils.convertTimeframeModel(model, symbol, frameType))
+    }
+
+    async getTimeframesByCount(symbol, frameType, from, count) {
+        const collection = await this.getTimeframeCollection(symbol, frameType);
+        const list = await this.getAll(collection, {
+            query: {
+                frame: {
+                    $gte: from
+                }
+            },
+            sort: {
+                property: 'frame',
+                direction: 1
+            },
+            limit: count
         });
         return list.results.map(model => Utils.convertTimeframeModel(model, symbol, frameType))
     }

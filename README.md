@@ -61,6 +61,16 @@ const data = {
     to: 1585338232 // end of the timeframe, unix timestamp
 }
 ```
+- **getTimeframeByCount** - get timeframe from the database by count
+```javascript
+// request data
+const data = {
+    symbol: globalConfig.TICKER_LIST[0], // ticker name from the TICKER_LIST
+    frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, // frame type: M1, M5, M15, M30, H1, H4, D1
+    from: 1585237432, // start of the timeframe, unix timestamp
+    count: 10 // timeframe count
+}
+```
 - **subscribeTickers** - subscription on tickers update
 
 #### Server to client
@@ -105,8 +115,9 @@ const data = {
 }
 ```
 - **onTimeframeByRange** - an answer on **getTimeframeByRange** event
+- **onTimeframeByCount** - an answer on **getTimeframeByCount** event
 ```javascript
-// response data
+// response data for onTimeframeByRange and onTimeframeByCount events
 const data = [{
     frameType: 'M5', // frame type
     symbol: 'EURAUD', // ticker symbol

@@ -67,10 +67,17 @@
                 setTimeout(() => {
                     socket.emit('getTimeframeByRange', {symbol: globalConfig.TICKER_LIST[0], frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, from: 1585237432, to: 1585338232});
                 }, 5000);
+                setTimeout(() => {
+                    socket.emit('getTimeframeByCount', {symbol: globalConfig.TICKER_LIST[0], frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, from: 1585237432, count: 15});
+                }, 7000);
 
                 socket.once('onTimeframeByRange', (data) => {
                     console.log('onTimeframeByRange', data);
-                })
+                });
+
+                socket.once('onTimeframeByCount', (data) => {
+                    console.log('onTimeframeByCount', data);
+                });
             });
 
             socket.emit('getGlobalConfig');
