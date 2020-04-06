@@ -67,11 +67,17 @@ const data = {
 const data = {
     symbol: globalConfig.TICKER_LIST[0], // ticker name from the TICKER_LIST
     frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, // frame type: M1, M5, M15, M30, H1, H4, D1
-    from: 1585237432, // start of the timeframe, unix timestamp
+    to: 1585237432, // end of the timeframe, unix timestamp
     count: 10 // timeframe count
 }
 ```
 - **subscribeTickers** - subscription on tickers update
+```javascript
+// request data
+const data = {
+    list: ['EURAUD', 'EURCAD'] // ticker names from the TICKER_LIST
+}
+```
 
 #### Server to client
 - **connect** - native socket.io event

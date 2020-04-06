@@ -6,7 +6,7 @@ const _ = require('lodash');
 const CONSTANTS = require('./constants');
 
 const timeframeSubscribers = new Map();
-const tickerSubscribers = new Set();
+const tickerSubscribers = new Map();
 
 module.exports = (io) => {
     io.on('connection', onNewWebsocketConnection);
@@ -26,9 +26,15 @@ module.exports = (io) => {
     });
 
     tickerEventEmitter.subscribeOnUpdate((data) => {
-        for (const subscriberId of tickerSubscribers) {
-            console.log('io.to ticker', subscriberId);
-            io.to(`${subscriberId}`).emit('onUpdateTickers', data);
+        if (!_.isArray(data)) {
+            return;
+        }
+        for (let [key, value] of tickerSubscribers) {
+            const tickers = _.filter(data, ticker => value.list.some(item => item === ticker.Symbol));
+            if (tickers.length) {
+                console.log('io.to ticker', key);
+                io.to(`${key}`).emit('onUpdateTickers', tickers);
+            }
         }
     });
 };
@@ -49,14 +55,18 @@ function onNewWebsocketConnection(socket) {
         console.info(`Socket ${socket.id} has been disconnected.`);
     });
 
-    socket.on('subscribeTickers', () => {
-        tickerSubscribers.add(socket.id);
+    socket.on('subscribeTickers', (data) => {
+        if (!data || !_.isArray(data.list)) {
+            return;
+        }
+        tickerSubscribers.set(socket.id, {list: data.list});
         setImmediate(async () => {
-            console.log('ticker subscriber', socket.id);
+            console.log('ticker subscriber', socket.id, data.list);
+            const envTickerList = Utils.getTickerList();
             const collection = await repository.getTickerCollection();
             const tickerList = await repository.getAll(collection, {
                 query: {
-                    Symbol: {$in: Utils.getTickerList()}
+                    Symbol: {$in: _.filter(envTickerList, symbol => data.list.some(item => item === symbol))}
                 }
             });
             socket.emit('onInitialTickers', tickerList.results.map(Utils.convertTickerModel));
@@ -64,7 +74,7 @@ function onNewWebsocketConnection(socket) {
     });
 
     socket.on('subscribeTimeframe', (data) => {
-        if (!CONSTANTS.FRAME_TYPES[data.frameType]) {
+        if (!data || !CONSTANTS.FRAME_TYPES[data.frameType]) {
             return;
         }
         const subscriber = {
@@ -82,7 +92,7 @@ function onNewWebsocketConnection(socket) {
     });
 
     socket.on('getTimeframeByRange', (data) => {
-        if (!CONSTANTS.FRAME_TYPES[data.frameType]) {
+        if (!data || !CONSTANTS.FRAME_TYPES[data.frameType]) {
             return;
         }
         const requestData = {
@@ -99,18 +109,18 @@ function onNewWebsocketConnection(socket) {
     });
 
     socket.on('getTimeframeByCount', (data) => {
-        if (!CONSTANTS.FRAME_TYPES[data.frameType]) {
+        if (!data || !CONSTANTS.FRAME_TYPES[data.frameType]) {
             return;
         }
         const requestData = {
             symbol: data.symbol,
             frameType: data.frameType,
-            from: data.from,
+            to: data.to,
             count: _.toSafeInteger(data.count),
         };
         setImmediate(async () => {
             console.log('get timeframe by count', socket.id, JSON.stringify(requestData));
-            const list = await repository.getTimeframesByCount(requestData.symbol, requestData.frameType, requestData.from, requestData.count);
+            const list = await repository.getTimeframesByCount(requestData.symbol, requestData.frameType, requestData.to, requestData.count);
             socket.emit('onTimeframeByCount', list);
         });
     });

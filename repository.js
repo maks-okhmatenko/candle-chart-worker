@@ -78,24 +78,24 @@ class Repository {
                 direction: 1
             }
         });
-        return list.results.map(model => Utils.convertTimeframeModel(model, symbol, frameType))
+        return _.map(list.results, model => Utils.convertTimeframeModel(model, symbol, frameType));
     }
 
-    async getTimeframesByCount(symbol, frameType, from, count) {
+    async getTimeframesByCount(symbol, frameType, to, count) {
         const collection = await this.getTimeframeCollection(symbol, frameType);
         const list = await this.getAll(collection, {
             query: {
                 frame: {
-                    $gte: from
+                    $lte: to
                 }
             },
             sort: {
                 property: 'frame',
-                direction: 1
+                direction: -1
             },
             limit: count
         });
-        return list.results.map(model => Utils.convertTimeframeModel(model, symbol, frameType))
+        return _.map(_.reverse(list.results), model => Utils.convertTimeframeModel(model, symbol, frameType));
     }
 
 }

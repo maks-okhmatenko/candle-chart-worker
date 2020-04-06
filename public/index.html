@@ -62,13 +62,13 @@
                 });
 
                 socket.emit('subscribeTimeframe', {symbol: globalConfig.TICKER_LIST[0], frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, from: 1585237432, to: 1585338232});
-                socket.emit('subscribeTickers');
+                socket.emit('subscribeTickers', {list: [globalConfig.TICKER_LIST[0], globalConfig.TICKER_LIST[1]]});
 
                 setTimeout(() => {
-                    socket.emit('getTimeframeByRange', {symbol: globalConfig.TICKER_LIST[0], frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, from: 1585237432, to: 1585338232});
+                    socket.emit('getTimeframeByRange', {symbol: globalConfig.TICKER_LIST[0], frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, from: 1585251600, to: 1585338232});
                 }, 5000);
                 setTimeout(() => {
-                    socket.emit('getTimeframeByCount', {symbol: globalConfig.TICKER_LIST[0], frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, from: 1585237432, count: 15});
+                    socket.emit('getTimeframeByCount', {symbol: globalConfig.TICKER_LIST[0], frameType: globalConfig.CONSTANTS.FRAME_TYPES.M5, to: 1585251600, count: 15});
                 }, 7000);
 
                 socket.once('onTimeframeByRange', (data) => {
