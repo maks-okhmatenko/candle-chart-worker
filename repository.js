@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const moment = require('moment');
 const connectionResolver = require('./connection');
-const Utils = require('./utils');
+const Utils = require('./modules/utils');
 
 class Repository {
     constructor(resolver) {
@@ -22,7 +22,9 @@ class Repository {
     async getTimeframeCollection(symbol, frameType) {
         const db = await this.resolver.getConnection();
         const collection = db.collection(`${symbol}_${frameType}`);
-        await this.createIndex(collection, {frame: -1});
+        if (!Utils.isReadonlyMode()) {
+            await this.createIndex(collection, {frame: -1});
+        }
         return collection;
     }
 
@@ -64,9 +66,9 @@ class Repository {
         return {total, results};
     }
 
-    async getTimeframesByRange(symbol, frameType, from, to) {
+    async getConvertedTimeframesByRange(symbol, frameType, from, to) {
         const collection = await this.getTimeframeCollection(symbol, frameType);
-        const list = await this.getAll(collection, {
+        const list =  await this.getAll(collection, {
             query: {
                 frame: {
                     $gte: from,
@@ -81,9 +83,14 @@ class Repository {
         return _.map(list.results, model => Utils.convertTimeframeModel(model, symbol, frameType));
     }
 
-    async getTimeframesByCount(symbol, frameType, to, count) {
+    async getConvertedTimeframesByCount(symbol, frameType, to, count) {
+        const list = await this.getTimeframeByCount(symbol, frameType, to, count);
+        return _.map(_.reverse(list.results), model => Utils.convertTimeframeModel(model, symbol, frameType));
+    }
+
+    async getTimeframeByCount(symbol, frameType, to, count){
         const collection = await this.getTimeframeCollection(symbol, frameType);
-        const list = await this.getAll(collection, {
+        return await this.getAll(collection, {
             query: {
                 frame: {
                     $lte: to
@@ -95,7 +102,6 @@ class Repository {
             },
             limit: count
         });
-        return _.map(_.reverse(list.results), model => Utils.convertTimeframeModel(model, symbol, frameType));
     }
 
 }

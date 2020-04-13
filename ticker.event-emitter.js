@@ -1,4 +1,4 @@
-const Utils = require('./utils');
+const Utils = require('./modules/utils');
 const EventEmitter = require('events');
 const repository = require('./repository');
 const _ = require('lodash');

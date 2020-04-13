@@ -7,6 +7,7 @@ const express = require('express');
 const errorHandler = require('errorhandler');
 // const lusca = require('lusca');
 const dotenv = require('dotenv');
+const Utils = require('./modules/utils');
 
 dotenv.config({path: '.env'});
 
@@ -51,7 +52,11 @@ http.listen(app.get('port'), () => {
     console.log('Press CTRL-C to stop\n');
 });
 
-require('./socket-server')(io);
-require('./socket-client')();
+if (Utils.isReadonlyMode()) {
+    require('./socket-server')(io);
+    require('./socket-client-notifier')();
+} else {
+    require('./socket-client-saver')();
+}
 
 module.exports = app;

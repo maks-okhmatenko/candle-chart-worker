@@ -37,14 +37,14 @@ npm start
 - **WS_STREAM_URI** - external websocket url
 - **TICKER_LIST** - all possible tickers separated by comma symbol
 - **TICKER_PER_SECOND** - how often the service will notify about new ticker values
-- **TIMEFRAME_PER_MINUTE** - how often the service will notify about new timeframe values
+- **SAVE_TIMEFRAME_PER_MINUTE** - how often the service will save timeframes into the database
 
 #### Possible values and examples
 - **NODE_ENV** - `development` or `production`
 - **SERVICE_MODE** - `full` (listening to the WS, notifying and saving data to the database) or `readonly` (only listening and notifying)
 - **TICKER_LIST** - `AUDCAD,AUDCHF,AUDJPY` and so on
 - **TICKER_PER_SECOND** - `1`,`2`,`3`,`4`,`5`
-- **TIMEFRAME_PER_MINUTE** - `1`,`2`,`3`,`4`
+- **SAVE_TIMEFRAME_PER_MINUTE** - `1`,`2`,`3`,`4`
 
 ### Socket events
 

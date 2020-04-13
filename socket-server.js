@@ -1,6 +1,6 @@
 const timeframeEventEmitter = require('./timeframe.event-emitter');
 const tickerEventEmitter = require('./ticker.event-emitter');
-const Utils = require('./utils');
+const Utils = require('./modules/utils');
 const repository = require('./repository');
 const _ = require('lodash');
 const CONSTANTS = require('./constants');
@@ -86,7 +86,7 @@ function onNewWebsocketConnection(socket) {
         timeframeSubscribers.set(socket.id, subscriber);
         setImmediate(async () => {
             console.log('timeframe subscriber', socket.id, JSON.stringify(subscriber));
-            const list = await repository.getTimeframesByRange(subscriber.symbol, subscriber.frameType, subscriber.from, subscriber.to);
+            const list = await repository.getConvertedTimeframesByRange(subscriber.symbol, subscriber.frameType, subscriber.from, subscriber.to);
             socket.emit('onInitialTimeframes', list);
         });
     });
@@ -103,7 +103,7 @@ function onNewWebsocketConnection(socket) {
         };
         setImmediate(async () => {
             console.log('get timeframe by range', socket.id, JSON.stringify(requestData));
-            const list = await repository.getTimeframesByRange(requestData.symbol, requestData.frameType, requestData.from, requestData.to);
+            const list = await repository.getConvertedTimeframesByRange(requestData.symbol, requestData.frameType, requestData.from, requestData.to);
             socket.emit('onTimeframeByRange', list);
         });
     });
@@ -120,7 +120,7 @@ function onNewWebsocketConnection(socket) {
         };
         setImmediate(async () => {
             console.log('get timeframe by count', socket.id, JSON.stringify(requestData));
-            const list = await repository.getTimeframesByCount(requestData.symbol, requestData.frameType, requestData.to, requestData.count);
+            const list = await repository.getConvertedTimeframesByCount(requestData.symbol, requestData.frameType, requestData.to, requestData.count);
             socket.emit('onTimeframeByCount', list);
         });
     });
