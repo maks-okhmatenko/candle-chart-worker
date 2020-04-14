@@ -33,7 +33,7 @@ module.exports = () => {
                     if (!_.isArray(messageList)) {
                         return;
                     }
-                    // calculateTickers(messageList);
+                    calculateTickers(messageList);
                     calculateTimeframes(messageList);
                 } catch (e) {
                     console.log(e);
