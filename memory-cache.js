@@ -39,7 +39,7 @@ class MemoryCache {
                     result[symbol] = symbolCache;
                 }
             });
-            return {timestamp, result};
+            return {timestamp: start, result};
         }
         return {};
     }
