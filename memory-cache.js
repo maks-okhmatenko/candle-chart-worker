@@ -11,16 +11,10 @@ class MemoryCache {
     }
 
     set(type, symbol, timestamp, value) {
-        // console.log(type, symbol, timestamp, value);
         if (!this[type][symbol]) {
             this[type][symbol] = new NodeCache(this.getOptionsByType(type));
-            // this[type][symbol].on("expired", function (key, value) {
-            //     console.log('expired', type, symbol, key, value);
-            // });
         }
         this[type][symbol].set(timestamp, value);
-        const keys = this[type][symbol].keys();
-        // console.log(type, symbol, keys.length, this[type][symbol].getTtl(_.first(keys)), JSON.stringify(keys));
     }
 
     get(type, symbol, timestamp) {
@@ -64,7 +58,6 @@ class MemoryCache {
 
         const {timestamp: startD1, record: recordD1} = this.prepareCacheForFrameType(FRAME_TYPES.H4, FRAME_TYPES.D1, symbol, timestamp);
         recordD1 && this.set(FRAME_TYPES.D1, symbol, startD1, recordD1);
-        // console.log('======================================');
     }
 
     prepareCacheForFrameType(baseFrameType, currentFrameType, symbol, timestamp) {
