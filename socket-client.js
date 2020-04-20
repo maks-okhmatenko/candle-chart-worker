@@ -52,7 +52,8 @@ module.exports = () => {
             if (ticketListENV.length && !_.includes(ticketListENV, messageItem.Symbol)) {
                 return;
             }
-            _.set(tickers, [messageItem.Symbol], _.extend({}, messageItem, {Time: newFrameMilliseconds}));
+            const Spread = (_.toNumber(messageItem.Ask) - _.toNumber(messageItem.Bid)).toFixed(5);
+            _.set(tickers, [messageItem.Symbol], _.extend({}, messageItem, {Time: newFrameMilliseconds, Spread}));
         });
     }
 
