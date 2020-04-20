@@ -91,6 +91,24 @@ function onNewWebsocketConnection(socket) {
         });
     });
 
+    socket.on('subscribeTimeframeInitByCount', (data) => {
+        if (!data || !CONSTANTS.FRAME_TYPES[data.frameType]) {
+            return;
+        }
+        const subscriber = {
+            symbol: data.symbol,
+            frameType: data.frameType,
+            from: data.from,
+            count: _.toSafeInteger(data.count),
+        };
+        timeframeSubscribers.set(socket.id, subscriber);
+        setImmediate(async () => {
+            console.log('timeframe subscriber, init by count', socket.id, JSON.stringify(subscriber));
+            const list = await repository.getTimeframesByCount(subscriber.symbol, subscriber.frameType, subscriber.from, subscriber.to);
+            socket.emit('onInitialTimeframes', list);
+        });
+    });
+
     socket.on('getTimeframeByRange', (data) => {
         if (!data || !CONSTANTS.FRAME_TYPES[data.frameType]) {
             return;
