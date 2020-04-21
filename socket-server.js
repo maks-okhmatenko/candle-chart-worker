@@ -104,7 +104,7 @@ function onNewWebsocketConnection(socket) {
         timeframeSubscribers.set(socket.id, subscriber);
         setImmediate(async () => {
             console.log('timeframe subscriber, init by count', socket.id, JSON.stringify(subscriber));
-            const list = await repository.getTimeframesByCount(subscriber.symbol, subscriber.frameType, subscriber.to, subscriber.count);
+            const list = await repository.getConvertedTimeframesByCount(subscriber.symbol, subscriber.frameType, subscriber.to, subscriber.count);
             socket.emit('onInitialTimeframes', list);
         });
     });
