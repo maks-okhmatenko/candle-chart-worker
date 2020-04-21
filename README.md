@@ -50,7 +50,7 @@ npm start
 
 #### Client to server
 - **getGlobalConfig** - getting configuration from the server
-- **subscribeTimeframe** - subscription on the timeframe update
+- **subscribeTimeframe** - subscription on the timeframe update, get initial data by range
 - **getTimeframeByRange** - get timeframe from the database by range
 ```javascript
 // request data for subscribeTimeframe and getTimeframesByRange events
@@ -61,6 +61,7 @@ const data = {
     to: 1585338232 // end of the timeframe, unix timestamp
 }
 ```
+- **subscribeTimeframeInitByCount** - subscription on the timeframe update, get initial data by count
 - **getTimeframeByCount** - get timeframe from the database by count
 ```javascript
 // request data
